@@ -13,7 +13,7 @@ export default function Header() {
         <header className='flex justify-between items-center px-3 max-w-6xl mx-auto'>
             <p className="cursor-pointer text-red-500 text-2xl" 
             onClick={()=>navigate("/")}
-            >Hess<span className="text-black">tate.com</span></p>
+            >HESS<span className="text-black">tate.com</span></p>
             <div>
                 <ul className="flex space-x-10">
                     <li className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${pathMathRoute("/") && "text-black border-b-red-500"}`}
