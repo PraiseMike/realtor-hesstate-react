@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth';
-// import {AiFillEyeInvisible, AiFillEye} from "react-icons/ai"
+import {AiFillEyeInvisible, AiFillEye} from "react-icons/ai"
 
 export default function SignIn() {
-  const [showPassword] = useState(false); //remember to put this "setShowPassword"
+  const [showPassword, setShowPassword] = useState(false);  
   const [formData, setFormData] = useState({ //creating a formData hook
     email: "",
     password: ""
@@ -21,16 +21,16 @@ export default function SignIn() {
       <h1 className='text-3xl text-center mt-6 font-bold'>Sign In</h1>
       <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
         <div className='md:w-[67%] lg:w-[50%] mb-12 md:mb-6'>
-          <img src="" alt="Key" className='w-full rounded-2xl'/>
+          <img src="https://images.unsplash.com/photo-1609770231080-e321deccc34c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8a2V5fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Key" className='w-full rounded-2xl'/>
         </div>
         <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
           <form>
             <input className='w-full mb-6 px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type="email" id='email' value={email} onChange={onChange} placeholder="Email address" />
             <div className='relative mb-6'>
             <input className='w-full my-2 px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type={showPassword ? "text" : "password"} id='password' value={password} onChange={onChange} placeholder="Password" />
-            {/* {showPassword ? 
-              <AiFillEyeInvisible className="absolute right-3 top-3 text-xl cursor-pointer" onClick={()=>setShowPassword((prevState)=>!prevState)}/>
-            : <AiFillEye className="absolute right-3 top-3 text-xl cursor-pointer"/>} onClick={()=>setShowPassword((prevState)=>!prevState)}*/}
+            {showPassword ? 
+              <AiFillEyeInvisible className="absolute right-3 top-6 text-xl cursor-pointer" onClick={()=>setShowPassword((prevState)=>!prevState)}/>
+            : <AiFillEye className="absolute right-3 top-6 text-xl cursor-pointer" onClick={()=>setShowPassword((prevState)=>!prevState)}/>} 
             </div>
             <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg'>
               <p className='mb-6'>Don't have an account?
