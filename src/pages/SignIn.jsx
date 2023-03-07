@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
 import {AiFillEyeInvisible, AiFillEye} from "react-icons/ai"
+import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
+import {toast} from "react-toastify"
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);  
@@ -10,12 +12,29 @@ export default function SignIn() {
     password: ""
   });
   const {email, password} =formData; // destructuring the email and password from it and using the value
+  const navigate = useNavigate()
+  
   function onChange(e){
     setFormData((prevState)=>({
       ...prevState,
       [e.target.id]: e.target.value,
     }))
   }
+  async function onSubmit(e){
+    e.preventDefault()
+    try {
+      const auth = getAuth()
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password)
+      if(userCredentials.user){
+        navigate("/")
+      }
+    } catch (error) {
+      toast.error("Wrong user credentials")
+      
+    }
+
+  }
+
   return (
     <section>
       <h1 className='text-3xl text-center mt-6 font-bold'>Sign In</h1>
@@ -24,7 +43,7 @@ export default function SignIn() {
           <img src="https://images.unsplash.com/photo-1609770231080-e321deccc34c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8a2V5fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Key" className='w-full rounded-2xl'/>
         </div>
         <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-          <form>
+          <form onSubmit={onSubmit}>
             <input className='w-full mb-6 px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type="email" id='email' value={email} onChange={onChange} placeholder="Email address" />
             <div className='relative mb-6'>
             <input className='w-full my-2 px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type={showPassword ? "text" : "password"} id='password' value={password} onChange={onChange} placeholder="Password" />
