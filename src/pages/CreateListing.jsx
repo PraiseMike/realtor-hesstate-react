@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Spinner from '../components/Spinner';
 import {toast} from "react-toastify"
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
@@ -11,7 +11,7 @@ import {useNavigate} from "react-router-dom"
 export default function CreateListing() {
     const navigate = useNavigate();
     const auth = getAuth();
-    const [geolocationEnabled, setGeolocationEnabled] = useState(true); 
+    const [geolocationEnabled, setGeolocationEnabled] = useState(false);  // No bank card for now
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         type: "rent",
@@ -50,14 +50,14 @@ export default function CreateListing() {
         if(!e.target.files){
             setFormData((prevState)=>({
                 ...prevState,
-                [e.target.id]: boolean ?? e.target.value
-            }))
+                [e.target.id]: boolean ?? e.target.value,
+            }));
         }
     }
     async function onSubmit(e){
         e.preventDefault();
         setLoading(true);
-        if(discountedPrice >= +regularPrice){
+        if(+discountedPrice >= +regularPrice){
             setLoading(false)
             toast.error("Discounted price needs to be less than Regular price")
             return;
@@ -68,11 +68,10 @@ export default function CreateListing() {
             return;
         }
         let geolocation = {}
-        let location 
+        let location; 
         if(geolocationEnabled){
             const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEOCODE_API_KEY}`);
             const data = await response.json()
-            console.log(data);
             geolocation.lat = data.result[0]?.geometry.location.lat ?? 0;
             geolocation.lng = data.result[0]?.geometry.location.lng ?? 0;
 
@@ -102,12 +101,12 @@ export default function CreateListing() {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log('Upload is ' + progress + '% done');
                         switch (snapshot.state) {
-                        case 'paused':
-                            console.log('Upload is paused');
-                            break;
-                        case 'running':
-                            console.log('Upload is running');
-                            break;
+                            case 'paused':
+                                console.log('Upload is paused');
+                                break;
+                            case 'running':
+                                console.log('Upload is running');
+                                break;
                         }
                     }, 
                     (error) => {
@@ -121,12 +120,12 @@ export default function CreateListing() {
                             resolve(downloadURL);
                         });
                     }
-                    );
+                );
 
 
-            })
+            });
         }
-                    
+
         // for uploading the image
         const imgUrls = await Promise.all(
             [...images].map((image)=>storeImage(image))).catch((error)=>{
@@ -135,16 +134,16 @@ export default function CreateListing() {
                 return;
             });
 
+
         const formDataCopy = {
             ...formData,
             imgUrls,
             geolocation,
-            timestamp: serverTimestamp()
+            timestamp: serverTimestamp(),
+            userRef: auth.currentUser.uid,
         };
         delete formDataCopy.images;
         !formDataCopy.offer && delete formDataCopy.discountedPrice;
-        delete formDataCopy.latitude;
-        delete formDataCopy.longitude;
         const docRef = await addDoc(collection(db, "listings"), formDataCopy);
         setLoading(false)
         toast.success("Listing Created")
@@ -172,7 +171,7 @@ export default function CreateListing() {
             </div>
 
             <p className="font-semibold text-lg mt-6">Name</p>
-            <input type="text" id='name' value={name} placeholder="Name" required maxLength="32" minLength="12" onChange={onChange} className="w-full rounded px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white active:bg-white focus:border-slate-600 mb-6"/>
+            <input type="text" id='name' value={name} placeholder="Name" required maxLength="35" minLength="12" onChange={onChange} className="w-full rounded px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white active:bg-white focus:border-slate-600 mb-6"/>
 
             <div className="flex space-x-6 mb-6">
                 <div className="">
